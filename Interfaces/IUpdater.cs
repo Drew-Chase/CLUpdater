@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ChaseLabs.CLUpdate
+﻿namespace ChaseLabs.CLUpdate.Interfaces
 {
     public interface IUpdater
     {

@@ -9,7 +9,7 @@ namespace ChaseLabs.CLUpdate
     /// Company: Chase Labs
     /// </para>
     /// </summary>
-    public class Updater : IUpdater
+    public class Updater : Interfaces.IUpdater
     {
         string url, zipdir, unzipdir, lexe;
         bool overwrite;
@@ -40,7 +40,7 @@ namespace ChaseLabs.CLUpdate
             Start();
         }
 
-        public static IUpdater Init(string _url, string _zipDirectory, string _unzipDirectory, string _launchExecutableName, bool _overwrite)
+        public static Interfaces.IUpdater Init(string _url, string _zipDirectory, string _unzipDirectory, string _launchExecutableName, bool _overwrite)
         {
             return new Updater(_url, _zipDirectory, _unzipDirectory, _launchExecutableName, _overwrite);
         }
