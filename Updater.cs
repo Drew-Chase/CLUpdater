@@ -32,7 +32,15 @@ namespace ChaseLabs.CLUpdate
             zipdir = _zipDirectory;
             unzipdir = _unzipDirectory;
             lexe = _launchExecutableName;
-            overwrite = _overwrite;
+            overwrite = _overwrite; 
+            
+            //if (OverwriteDirectory)
+            //{
+            //    foreach (string file in System.IO.Directory.GetFiles(UnzipDirectory, "*", System.IO.SearchOption.AllDirectories))
+            //    {
+            //        System.IO.File.Delete(file);
+            //    }
+            //}
 
             if (!System.IO.Directory.Exists(UnzipDirectory))
             {
@@ -52,7 +60,7 @@ namespace ChaseLabs.CLUpdate
                 System.IO.File.Delete(System.IO.Path.Combine(ZipDirectory, "update.zip"));
             }
 
-            Start();
+            //Start();
         }
 
         public static Interfaces.IUpdater Init(string _url, string _zipDirectory, string _unzipDirectory, string _launchExecutableName, bool _overwrite)
@@ -64,7 +72,7 @@ namespace ChaseLabs.CLUpdate
         private void Start()
         {
             System.Console.WriteLine("Starting Updater...");
-            Download();
+            //Download();
         }
 
         public void Download()
@@ -72,12 +80,12 @@ namespace ChaseLabs.CLUpdate
             System.Console.WriteLine("Downloading Update...");
             using (System.Net.WebClient client = new System.Net.WebClient())
             {
-                client.DownloadFileCompleted += ((object sender, System.ComponentModel.AsyncCompletedEventArgs e) => { Unzip(); });
+                //client.DownloadFileCompleted += ((object sender, System.ComponentModel.AsyncCompletedEventArgs e) => { Unzip(); });
                 client.DownloadProgressChanged += ((object sender, System.Net.DownloadProgressChangedEventArgs e) => { System.Console.WriteLine($"{e.ProgressPercentage}%"); progress = e.ProgressPercentage; });
                 client.DownloadFile(URL, System.IO.Path.Combine(ZipDirectory, "update.zip"));
                 client.Dispose();
                 System.Threading.Thread.Sleep(2 * 1000);
-                Unzip();
+                //Unzip();
             }
         }
 
@@ -86,14 +94,14 @@ namespace ChaseLabs.CLUpdate
             System.Console.WriteLine("Unziping Update...");
             if (OverwriteDirectory)
             {
-                foreach (string file in System.IO.Directory.GetFiles(UnzipDirectory))
+                foreach (string file in System.IO.Directory.GetFiles(UnzipDirectory, "*", System.IO.SearchOption.AllDirectories))
                 {
                     System.IO.File.Delete(file);
                 }
             }
             System.IO.Compression.ZipFile.ExtractToDirectory(System.IO.Path.Combine(ZipDirectory, "update.zip"), UnzipDirectory);
             System.Threading.Thread.Sleep(2 * 1000);
-            CleanUp();
+            //CleanUp();
         }
 
         public void CleanUp()

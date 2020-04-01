@@ -17,6 +17,11 @@ namespace ChaseLabs.CLUpdate
             {
                 System.Console.WriteLine("Update Needed!");
                 var update = Updater.Init(zipUrl, zipDirectory, unzipDirectory, launchExecutableName, overwrite);
+
+                update.Download();
+                update.Unzip();
+                update.CleanUp();
+
                 using (System.Net.WebClient client = new System.Net.WebClient())
                 {
                     if (System.IO.File.Exists(localVersionFilePath))
@@ -41,20 +46,28 @@ namespace ChaseLabs.CLUpdate
 
         public static bool CheckForUpdate(string versionKey, string localVersionFilePath, string remoteVersionFilePath)
         {
-            int currentRelease = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[0], currentMajor = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[1], currentMinor = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[2];
-            int remoteRelease = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[0], remoteMajor = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[1], remoteMinor = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[2];
-
-            if (currentRelease < remoteRelease)
+            try
             {
-                return true;
-            }
+                if (!System.IO.File.Exists(localVersionFilePath)) return true;
+                int currentRelease = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[0], currentMajor = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[1], currentMinor = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[2];
+                int remoteRelease = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[0], remoteMajor = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[1], remoteMinor = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[2];
 
-            if (currentMajor < remoteMajor)
-            {
-                return true;
-            }
+                if (currentRelease < remoteRelease)
+                {
+                    return true;
+                }
 
-            if (currentMinor < remoteMinor)
+                if (currentMajor < remoteMajor)
+                {
+                    return true;
+                }
+
+                if (currentMinor < remoteMinor)
+                {
+                    return true;
+                }
+            }
+            catch
             {
                 return true;
             }

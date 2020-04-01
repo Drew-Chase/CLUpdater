@@ -3,6 +3,20 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>ChaseLabs.CLUpdate</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageId>ChaseLabs.CLUpdate</PackageId>
+    <Version>0.0.7</Version>
+    <Authors>Drew Chase</Authors>
+    <Company>Chase Labs</Company>
+    <Description>An Easy to Use Update Utility</Description>
+    <Copyright>Chase Labs - 2020</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/DcmanProductions/CLUpdater</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DcmanProductions/CLUpdater.git</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>Utilities Updating Update ChaseLabs Helpers</PackageTags>
+    <PackageReleaseNotes>Fixed Error if there was a Subdirectory</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
