@@ -11,12 +11,26 @@ namespace ChaseLabs.CLUpdate
     /// </summary>
     public class UpdateManager
     {
-        public static void Update(string versionKey, string localVersionFilePath, string remoteVersionFilePath, string zipUrl, string zipDirectory, string unzipDirectory, string launchExecutableName, bool overwrite)
+
+        /// <summary>
+        /// Automatically Checks for Update and Downloads if Needed
+        /// <para>Version Files Should be Orginized Like so</para>
+        /// <code>Version Key 1.0.0</code>
+        /// </summary>
+        /// <param name="versionKey">The Label before the Version Numbers</param>
+        /// <param name="localVersionFilePath">The Path to the current Version File, If not found it will automatically update</param>
+        /// <param name="remoteVersionFilePath">The URL to the updated Version File</param>
+        /// <param name="zipUrl">The Direct Download URL to the Update Zip Archive</param>
+        /// <param name="zipDirectory">The Temp Directory where the Zip Archive will be Downloaded</param>
+        /// <param name="unzipDirectory">The Application Directory</param>
+        /// <param name="launchExecutableName">The Application Executable Path</param>
+        /// <param name="overwrite">Weather to Clear the Application Directory Prior to Unziping</param>
+        public static void Update(string versionKey, string localVersionFilePath, string remoteVersionFilePath, string zipUrl, string zipDirectory, string unzipDirectory, string launchExecutableName, bool overwrite = true)
         {
             if (CheckForUpdate(versionKey, localVersionFilePath, remoteVersionFilePath) || !System.IO.File.Exists(System.IO.Path.Combine(unzipDirectory, launchExecutableName)))
             {
                 System.Console.WriteLine("Update Needed!");
-                var update = Updater.Init(zipUrl, zipDirectory, unzipDirectory, launchExecutableName, overwrite);
+                Interfaces.IUpdater update = Updater.Init(zipUrl, zipDirectory, unzipDirectory, launchExecutableName, overwrite);
 
                 update.Download();
                 update.Unzip();
@@ -44,13 +58,36 @@ namespace ChaseLabs.CLUpdate
             }
         }
 
+        /// <summary>
+        /// Checks if an Update is Needed
+        /// <para>Version Files Should be Orginized Like so</para>
+        /// <code>Version Key 1.0.0</code>
+        /// </summary>
+        /// <param name="versionKey">The Label before the Version Numbers</param>
+        /// <param name="localVersionFilePath">The Path to the current Version File, If not found it will automatically update</param>
+        /// <param name="remoteVersionFilePath">The URL to the updated Version File</param>
+        /// <returns>True = Needs Update | False = Doesn't Need Update</returns>
         public static bool CheckForUpdate(string versionKey, string localVersionFilePath, string remoteVersionFilePath)
         {
             try
             {
-                if (!System.IO.File.Exists(localVersionFilePath)) return true;
+                if (!System.IO.File.Exists(localVersionFilePath))
+                {
+                    return true;
+                }
+
+                if (string.IsNullOrEmpty(ReadLocalVersion(localVersionFilePath, versionKey)) || string.IsNullOrWhiteSpace(ReadLocalVersion(localVersionFilePath, versionKey)))
+                {
+                    return true;
+                }
+
                 int currentRelease = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[0], currentMajor = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[1], currentMinor = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[2];
                 int remoteRelease = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[0], remoteMajor = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[1], remoteMinor = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[2];
+
+                if (currentMajor == 0 && currentMinor == 0 && currentRelease == 0)
+                {
+                    return true;
+                }
 
                 if (currentRelease < remoteRelease)
                 {
