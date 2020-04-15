@@ -51,16 +51,17 @@ namespace ChaseLabs.CLUpdate
             lexe = _launchExecutableName;
             overwrite = _overwrite;
 
-            if (!System.IO.Directory.Exists(UnzipDirectory))
-            {
-                System.Console.WriteLine("Removing Spent Update Archive Directory");
-                System.IO.Directory.CreateDirectory(UnzipDirectory);
-            }
 
             if (!System.IO.Directory.Exists(ZipDirectory))
             {
                 System.Console.WriteLine("Creating Application Directory");
                 System.IO.Directory.CreateDirectory(ZipDirectory);
+            }
+
+            if (System.IO.Directory.Exists(UnzipDirectory))
+            {
+                System.Console.WriteLine("Removing Spent Update Archive Directory");
+                System.IO.Directory.Delete(UnzipDirectory);
             }
 
             if (System.IO.File.Exists(System.IO.Path.Combine(ZipDirectory, "update.zip")))

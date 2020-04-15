@@ -1,4 +1,6 @@
 ﻿
+using ChaseLabs.CLUpdate.Lists;
+
 namespace ChaseLabs.CLUpdate
 {
     /// <summary>
@@ -11,6 +13,31 @@ namespace ChaseLabs.CLUpdate
     /// </summary>
     public class UpdateManager
     {
+
+        Versions localVerions;
+        Versions remoteVersions;
+
+        /// <summary>
+        /// Gets the Local Version Object
+        /// </summary>
+        public Versions LocalVerions => localVerions;
+        /// <summary>
+        /// Gets the Remote Version Object
+        /// </summary>
+        public Versions RemoteVersions => remoteVersions;
+
+        static UpdateManager _singleton;
+        /// <summary>
+        /// A Static Single Object
+        /// </summary>
+        public static UpdateManager Singleton
+        {
+            get
+            {
+                if (_singleton == null) _singleton = new UpdateManager();
+                return _singleton;
+            }
+        }
 
         /// <summary>
         /// Automatically Checks for Update and Downloads if Needed
@@ -25,7 +52,7 @@ namespace ChaseLabs.CLUpdate
         /// <param name="unzipDirectory">The Application Directory</param>
         /// <param name="launchExecutableName">The Application Executable Path</param>
         /// <param name="overwrite">Weather to Clear the Application Directory Prior to Unziping</param>
-        public static void Update(string versionKey, string localVersionFilePath, string remoteVersionFilePath, string zipUrl, string zipDirectory, string unzipDirectory, string launchExecutableName, bool overwrite = true)
+        public void Update(string versionKey, string localVersionFilePath, string remoteVersionFilePath, string zipUrl, string zipDirectory, string unzipDirectory, string launchExecutableName, bool overwrite = true)
         {
             if (CheckForUpdate(versionKey, localVersionFilePath, remoteVersionFilePath) || !System.IO.File.Exists(System.IO.Path.Combine(unzipDirectory, launchExecutableName)))
             {
@@ -36,16 +63,8 @@ namespace ChaseLabs.CLUpdate
                 update.Unzip();
                 update.CleanUp();
 
-                using (System.Net.WebClient client = new System.Net.WebClient())
-                {
-                    if (System.IO.File.Exists(localVersionFilePath))
-                    {
-                        System.IO.File.Delete(localVersionFilePath);
-                    }
+                UpdateVersionFile(versionKey);
 
-                    client.DownloadFile(remoteVersionFilePath, localVersionFilePath);
-                    client.Dispose();
-                }
                 update.LaunchExecutable();
             }
             else
@@ -59,6 +78,15 @@ namespace ChaseLabs.CLUpdate
         }
 
         /// <summary>
+        /// Updates the Local Version to the Updated One.
+        /// </summary>
+        /// <param name="key"></param>
+        public void UpdateVersionFile(string key)
+        {
+            localVerions.UpdateVersion(key, RemoteVersions.GetVersion(key).Value);
+        }
+
+        /// <summary>
         /// Checks if an Update is Needed
         /// <para>Version Files Should be Orginized Like so</para>
         /// <code>Version Key 1.0.0</code>
@@ -67,21 +95,32 @@ namespace ChaseLabs.CLUpdate
         /// <param name="localVersionFilePath">The Path to the current Version File, If not found it will automatically update</param>
         /// <param name="remoteVersionFilePath">The URL to the updated Version File</param>
         /// <returns>True = Needs Update | False = Doesn't Need Update</returns>
-        public static bool CheckForUpdate(string versionKey, string localVersionFilePath, string remoteVersionFilePath)
+        public bool CheckForUpdate(string versionKey, string localVersionFilePath, string remoteVersionFilePath)
         {
+            if (System.IO.File.Exists(System.IO.Path.Combine(System.IO.Directory.GetParent(localVersionFilePath).FullName, "Remote Versions"))) System.IO.File.Delete(System.IO.Path.Combine(System.IO.Directory.GetParent(localVersionFilePath).FullName, "Remote Versions"));
+            localVerions = new Versions(localVersionFilePath);
+            remoteVersions = new Versions(System.IO.Path.Combine(System.IO.Directory.GetParent(localVersionFilePath).FullName, "Remote Versions"));
             try
             {
+                if (localVerions.GetVersion(versionKey) == null || localVerions.GetVersion(versionKey).Value == "")
+                {
+                    localVerions.AddVersion(new Objects.Version() { Key = versionKey, Value = "0.0.0" });
+                    return true;
+                }
+
                 if (!System.IO.File.Exists(localVersionFilePath))
                 {
+                    localVerions.AddVersion(new Objects.Version() { Key = versionKey, Value = "0.0.0" });
                     return true;
                 }
 
-                if (string.IsNullOrEmpty(ReadLocalVersion(localVersionFilePath, versionKey)) || string.IsNullOrWhiteSpace(ReadLocalVersion(localVersionFilePath, versionKey)))
+                if (string.IsNullOrEmpty(ReadLocalVersion(versionKey)) || string.IsNullOrWhiteSpace(ReadLocalVersion(versionKey)))
                 {
+                    localVerions.AddVersion(new Objects.Version() { Key = versionKey, Value = "0.0.0" });
                     return true;
                 }
 
-                int currentRelease = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[0], currentMajor = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[1], currentMinor = ParseVersioning(ReadLocalVersion(localVersionFilePath, versionKey))[2];
+                int currentRelease = ParseVersioning(ReadLocalVersion(versionKey))[0], currentMajor = ParseVersioning(ReadLocalVersion(versionKey))[1], currentMinor = ParseVersioning(ReadLocalVersion(versionKey))[2];
                 int remoteRelease = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[0], remoteMajor = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[1], remoteMinor = ParseVersioning(ReadRemoteVersion(remoteVersionFilePath, versionKey))[2];
 
                 if (currentMajor == 0 && currentMinor == 0 && currentRelease == 0)
@@ -112,7 +151,7 @@ namespace ChaseLabs.CLUpdate
             return false;
         }
 
-        private static int[] ParseVersioning(string version)
+        private int[] ParseVersioning(string version)
         {
             int[] value = { 0, 0, 0 };
             for (int i = 0; i < version.Split('.').Length; i++)
@@ -135,39 +174,37 @@ namespace ChaseLabs.CLUpdate
             return value;
         }
 
-        private static string ReadRemoteVersion(string url, string key)
+        private string ReadRemoteVersion(string url, string key)
         {
-            string value = string.Empty;
+            string value = "";
             using (System.Net.WebClient client = new System.Net.WebClient())
             {
-                value = client.DownloadString(url);
-                foreach (string s in value.Split(System.Environment.NewLine.ToCharArray()[0]))
+                client.DownloadFile(url, remoteVersions.Path);
+                remoteVersions.VersionManager.FindPreExistingConfigs();
+
+                if (remoteVersions.GetVersion(key) != null)
                 {
-                    if (s.StartsWith(key))
-                    {
-                        value = s.Replace(key, "");
-                    }
+                    value = remoteVersions.GetVersion(key).Value;
                 }
+                else
+                {
+                    remoteVersions.AddVersion(new Objects.Version() { Key = key, Value = "0.0.0" });
+                }
+
                 client.Dispose();
             }
+            if (System.IO.File.Exists(remoteVersions.Path))
+                System.IO.File.Delete(remoteVersions.Path);
             return value;
         }
 
-        private static string ReadLocalVersion(string path, string key)
+        private string ReadLocalVersion(string key)
         {
-            string value = string.Empty;
-            using (System.IO.StreamReader reader = new System.IO.StreamReader(path))
+            if (localVerions.GetVersion(key) == null)
             {
-                while (!reader.EndOfStream)
-                {
-                    string txt = reader.ReadLine();
-                    if (txt.StartsWith(key))
-                    {
-                        value = txt.Replace(key, "");
-                    }
-                }
+                localVerions.AddVersion(new Objects.Version() { Key = key, Value = "0.0.0" });
             }
-            return value;
+            return localVerions.GetVersion(key).Value;
         }
 
     }

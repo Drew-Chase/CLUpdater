@@ -59,6 +59,26 @@
             Launches the Applications Executable
             </summary>
         </member>
+        <member name="T:ChaseLabs.CLUpdate.Lists.Versions">
+            <summary>
+            <para>
+            Author: Drew Chase
+            </para>
+            <para>
+            Company: Chase Labs
+            </para>
+            </summary>
+        </member>
+        <member name="T:ChaseLabs.CLUpdate.Objects.Version">
+            <summary>
+            <para>
+            Author: Drew Chase
+            </para>
+            <para>
+            Company: Chase Labs
+            </para>
+            </summary>
+        </member>
         <member name="T:ChaseLabs.CLUpdate.UpdateManager">
             <summary>
             <para>

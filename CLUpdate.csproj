@@ -32,4 +32,8 @@
     <None Remove="LICENSE" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CLConfiguration\CLConfiguration.csproj" />
+  </ItemGroup>
+
 </Project>
