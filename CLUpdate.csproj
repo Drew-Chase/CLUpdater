@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>ChaseLabs.CLUpdate</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageId>ChaseLabs.Updater</PackageId>
-    <Version>0.0.9</Version>
+    <Version>0.1.6</Version>
     <Authors>Drew Chase</Authors>
     <Company>Chase Labs</Company>
     <Description>An Easy to Use Update Utility</Description>
@@ -16,15 +15,19 @@
     <RepositoryUrl>https://github.com/DcmanProductions/CLUpdater.git</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Utilities Updating Update ChaseLabs Helpers</PackageTags>
-    <PackageReleaseNotes>Added Code Documentation</PackageReleaseNotes>
+    <PackageReleaseNotes>Changed Remote Version Location to the TEMP Folder</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>D:\Workspaces\Visual Studio Workspace\C#\Class Library\Libraries\CLUpdate\CLUpdate.xml</DocumentationFile>
+    <DocumentationFile>D:\Workspace\Visual Studio Workspace\C#\Class Library\Libraries\CLUpdate\CLUpdate.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>C:\Users\drew_\Documents\DLLs\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,7 +36,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\CLConfiguration\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CLConfiguration\CLConfiguration.csproj" />
+    <ProjectReference Include="..\CLDownloader\CLDownloader.csproj" />
   </ItemGroup>
 
 </Project>

@@ -34,11 +34,6 @@
             Returns Weather or not to remove all files in a directory or just skip them
             </summary>
         </member>
-        <member name="P:ChaseLabs.CLUpdate.Interfaces.IUpdater.DownloadProgress">
-            <summary>
-            Returns the Current Download Progress in interger form
-            </summary>
-        </member>
         <member name="M:ChaseLabs.CLUpdate.Interfaces.IUpdater.Download">
             <summary>
             Downloads the Zip Archive From URL
@@ -69,6 +64,60 @@
             </para>
             </summary>
         </member>
+        <member name="F:ChaseLabs.CLUpdate.Lists.Versions.VersionManager">
+            <summary>
+            The Config Manager Object of the Current Version File
+            </summary>
+        </member>
+        <member name="M:ChaseLabs.CLUpdate.Lists.Versions.#ctor(System.String)">
+            <summary>
+            Initializes the Version File in the Path
+            </summary>
+            <param name="VersionFilePath"></param>
+        </member>
+        <member name="M:ChaseLabs.CLUpdate.Lists.Versions.AddVersion(ChaseLabs.CLUpdate.Objects.Version)">
+            <summary>
+            Adds a Version Object to the Version File.
+            </summary>
+            <param name="version"></param>
+        </member>
+        <member name="M:ChaseLabs.CLUpdate.Lists.Versions.AddVersion(System.String,System.String)">
+            <summary>
+            Adds a Version using a Key and Value
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:ChaseLabs.CLUpdate.Lists.Versions.GetVersion(System.String)">
+            <summary>
+            Gets the Version based on the Key
+            <para>Returns Null if Not Found</para>
+            </summary>
+            <param name="key"></param>
+            <returns>Version Object</returns>
+        </member>
+        <member name="M:ChaseLabs.CLUpdate.Lists.Versions.GetChangeLog(System.String)">
+            <summary>
+            Gets the Version Changelog
+            <para>Returns Empty String If Not Found</para>
+            </summary>
+            <param name="key">Optional</param>
+            <returns>Full Changelog</returns>
+        </member>
+        <member name="M:ChaseLabs.CLUpdate.Lists.Versions.RemoveVersion(System.String)">
+            <summary>
+            Removes the Version with specified Key
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:ChaseLabs.CLUpdate.Lists.Versions.UpdateVersion(System.String,System.String)">
+            <summary>
+            Updates the Versions Value based on specified Key
+            <para>Adds a New Version with Key and Value if one did not previously exist</para>
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
         <member name="T:ChaseLabs.CLUpdate.Objects.Version">
             <summary>
             <para>
@@ -77,6 +126,16 @@
             <para>
             Company: Chase Labs
             </para>
+            </summary>
+        </member>
+        <member name="P:ChaseLabs.CLUpdate.Objects.Version.Key">
+            <summary>
+            The Version Key
+            </summary>
+        </member>
+        <member name="P:ChaseLabs.CLUpdate.Objects.Version.Value">
+            <summary>
+            The Version Value
             </summary>
         </member>
         <member name="T:ChaseLabs.CLUpdate.UpdateManager">
@@ -88,6 +147,28 @@
             Company: Chase Labs
             </para>
             </summary>
+        </member>
+        <member name="P:ChaseLabs.CLUpdate.UpdateManager.LocalVerions">
+            <summary>
+            Gets the Local Version Object
+            </summary>
+        </member>
+        <member name="P:ChaseLabs.CLUpdate.UpdateManager.RemoteVersions">
+            <summary>
+            Gets the Remote Version Object
+            </summary>
+        </member>
+        <member name="P:ChaseLabs.CLUpdate.UpdateManager.Singleton">
+            <summary>
+            A Static Single Object
+            </summary>
+        </member>
+        <member name="M:ChaseLabs.CLUpdate.UpdateManager.Init(System.String,System.String)">
+            <summary>
+            Run Before Anything Else
+            </summary>
+            <param name="localVersionFilePath"></param>
+            <param name="versionURL"></param>
         </member>
         <member name="M:ChaseLabs.CLUpdate.UpdateManager.Update(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Boolean)">
             <summary>
@@ -104,6 +185,12 @@
             <param name="launchExecutableName">The Application Executable Path</param>
             <param name="overwrite">Weather to Clear the Application Directory Prior to Unziping</param>
         </member>
+        <member name="M:ChaseLabs.CLUpdate.UpdateManager.UpdateVersionFile(System.String)">
+            <summary>
+            Updates the Local Version to the Updated One.
+            </summary>
+            <param name="key"></param>
+        </member>
         <member name="M:ChaseLabs.CLUpdate.UpdateManager.CheckForUpdate(System.String,System.String,System.String)">
             <summary>
             Checks if an Update is Needed
@@ -114,6 +201,20 @@
             <param name="localVersionFilePath">The Path to the current Version File, If not found it will automatically update</param>
             <param name="remoteVersionFilePath">The URL to the updated Version File</param>
             <returns>True = Needs Update | False = Doesn't Need Update</returns>
+        </member>
+        <member name="M:ChaseLabs.CLUpdate.UpdateManager.GetExecutableName(System.String)">
+            <summary>
+            Get Executable Name Stored in the Remote Verion File
+            </summary>
+            <param name="exe_key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ChaseLabs.CLUpdate.UpdateManager.GetArchiveURL(System.String)">
+            <summary>
+            Get Archive Download URL Stored in the Remote Verion File
+            </summary>
+            <param name="url_key"></param>
+            <returns></returns>
         </member>
         <member name="T:ChaseLabs.CLUpdate.Updater">
             <summary>
@@ -150,9 +251,9 @@
             Returns Weather or not to remove all files in a directory or just skip them
             </summary>
         </member>
-        <member name="P:ChaseLabs.CLUpdate.Updater.DownloadProgress">
+        <member name="P:ChaseLabs.CLUpdate.Updater.DownloadClient">
             <summary>
-            Returns the Current Download Progress in interger form
+            Returns the Current Download Client
             </summary>
         </member>
         <member name="M:ChaseLabs.CLUpdate.Updater.Init(System.String,System.String,System.String,System.String,System.Boolean)">

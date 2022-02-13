@@ -1,4 +1,5 @@
-﻿
+﻿using System.Threading.Tasks;
+
 namespace ChaseLabs.CLUpdate
 {
     /// <summary>
@@ -13,7 +14,8 @@ namespace ChaseLabs.CLUpdate
     {
         private readonly string url, zipdir, unzipdir, lexe;
         private readonly bool overwrite;
-        private int progress = 0;
+        private readonly int progress = 0;
+
         /// <summary>
         /// Returns the Download URL
         /// </summary>
@@ -38,10 +40,11 @@ namespace ChaseLabs.CLUpdate
         /// Returns Weather or not to remove all files in a directory or just skip them
         /// </summary>
         public bool OverwriteDirectory => overwrite;
+
         /// <summary>
-        /// Returns the Current Download Progress in interger form
+        /// Returns the Current Download Client
         /// </summary>
-        public int DownloadProgress => progress;
+        public System.Net.WebClient DownloadClient { get; private set; }
 
         private Updater(string _url, string _zipDirectory, string _unzipDirectory, string _launchExecutableName, bool _overwrite)
         {
@@ -51,25 +54,11 @@ namespace ChaseLabs.CLUpdate
             lexe = _launchExecutableName;
             overwrite = _overwrite;
 
-
-            if (!System.IO.Directory.Exists(ZipDirectory))
-            {
-                System.Console.WriteLine("Creating Application Directory");
-                System.IO.Directory.CreateDirectory(ZipDirectory);
-            }
-
-            if (System.IO.Directory.Exists(UnzipDirectory))
-            {
-                System.Console.WriteLine("Removing Spent Update Archive Directory");
-                System.IO.Directory.Delete(UnzipDirectory);
-            }
-
             if (System.IO.File.Exists(System.IO.Path.Combine(ZipDirectory, "update.zip")))
             {
                 System.Console.WriteLine("Removing Spent Update Archive");
                 System.IO.File.Delete(System.IO.Path.Combine(ZipDirectory, "update.zip"));
             }
-
         }
 
         /// <summary>
@@ -81,7 +70,7 @@ namespace ChaseLabs.CLUpdate
         /// <param name="_launchExecutableName">The Application Executable to Launch Apon Completion</param>
         /// <param name="_overwrite">Weather to Clear the Application Directory Prior to Unziping</param>
         /// <returns></returns>
-        public static Interfaces.IUpdater Init(string _url, string _zipDirectory, string _unzipDirectory, string _launchExecutableName, bool _overwrite = true)
+        public static Updater Init(string _url, string _zipDirectory, string _unzipDirectory, string _launchExecutableName, bool _overwrite = true)
         {
             System.Console.WriteLine("Initializing Updater...");
             return new Updater(_url, _zipDirectory, _unzipDirectory, _launchExecutableName, _overwrite);
@@ -97,14 +86,33 @@ namespace ChaseLabs.CLUpdate
         /// </summary>
         public void Download()
         {
-            System.Console.WriteLine("Downloading Update...");
-            using (System.Net.WebClient client = new System.Net.WebClient())
+            if (!System.IO.Directory.Exists(ZipDirectory))
             {
-                client.DownloadProgressChanged += ((object sender, System.Net.DownloadProgressChangedEventArgs e) => { System.Console.WriteLine($"{e.ProgressPercentage}%"); progress = e.ProgressPercentage; });
-                client.DownloadFile(URL, System.IO.Path.Combine(ZipDirectory, "update.zip"));
-                client.Dispose();
-                System.Threading.Thread.Sleep(2 * 1000);
+                System.Console.WriteLine("Creating Application Directory");
+                System.IO.Directory.CreateDirectory(ZipDirectory);
             }
+            System.Console.WriteLine("Downloading Update...");
+            Task.Run(() => Utilities.Downloader.Downloader.DownloadAsync(URL, "update.zip", /*System.IO.Path.Combine(ZipDirectory, "update.zip")*/ZipDirectory, 999999)).Wait();
+            System.Threading.Thread.Sleep(2 * 1000);
+
+            //using (DownloadClient = new System.Net.WebClient())
+            //{
+            //    int percentage = 0;
+            //    //await DownloadClient.DownloadFileAsync(new System.Uri(URL), System.IO.Path.Combine(ZipDirectory, "update.zip"));
+            //    System.Threading.Tasks.Task tsk = DownloadClient.DownloadFileTaskAsync(URL, System.IO.Path.Combine(ZipDirectory, "update.zip"));
+            //    //DownloadClient.DownloadProgressChanged += ((object sender, System.Net.DownloadProgressChangedEventArgs e) => System.Console.WriteLine($"Dowloading: {e.ProgressPercentage}%"));
+            //    DownloadClient.DownloadProgressChanged += (s, e) =>
+            //    {
+            //        if (e.ProgressPercentage > percentage)
+            //        {
+            //            System.Console.WriteLine($"Downloading: {e.ProgressPercentage}%");
+            //            percentage = e.ProgressPercentage;
+            //        }
+            //    };
+            //    DownloadClient.Dispose();
+            //    System.Threading.Thread.Sleep(2 * 1000);
+            //    tsk.Wait();
+            //}
         }
 
         /// <summary>
@@ -115,10 +123,12 @@ namespace ChaseLabs.CLUpdate
             System.Console.WriteLine("Unziping Update...");
             if (OverwriteDirectory)
             {
-                foreach (string file in System.IO.Directory.GetFiles(UnzipDirectory, "*", System.IO.SearchOption.AllDirectories))
+                if (System.IO.Directory.Exists(UnzipDirectory))
                 {
-                    System.IO.File.Delete(file);
+                    System.IO.Directory.Delete(UnzipDirectory, true);
                 }
+
+                System.IO.Directory.CreateDirectory(UnzipDirectory);
             }
             System.IO.Compression.ZipFile.ExtractToDirectory(System.IO.Path.Combine(ZipDirectory, "update.zip"), UnzipDirectory);
             System.Threading.Thread.Sleep(2 * 1000);
@@ -140,6 +150,7 @@ namespace ChaseLabs.CLUpdate
                 System.IO.Directory.Delete(ZipDirectory);
             }
         }
+
         /// <summary>
         /// Launches the Applications Executable
         /// </summary>
@@ -152,6 +163,5 @@ namespace ChaseLabs.CLUpdate
                 System.Environment.Exit(0);
             }
         }
-
     }
 }

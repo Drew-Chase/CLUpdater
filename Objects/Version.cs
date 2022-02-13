@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ChaseLabs.CLUpdate.Objects
+﻿namespace ChaseLabs.CLUpdate.Objects
 {
     /// <summary>
     /// <para>
@@ -18,10 +14,10 @@ namespace ChaseLabs.CLUpdate.Objects
         /// The Version Key
         /// </summary>
         public string Key { get; set; }
+
         /// <summary>
         /// The Version Value
         /// </summary>
         public string Value { get; set; }
-
     }
 }

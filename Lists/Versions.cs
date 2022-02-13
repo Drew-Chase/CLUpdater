@@ -1,8 +1,4 @@
 ﻿using ChaseLabs.CLConfiguration.List;
-using ChaseLabs.CLConfiguration.Object;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChaseLabs.CLUpdate.Lists
 {
@@ -21,7 +17,7 @@ namespace ChaseLabs.CLUpdate.Lists
         /// </summary>
         public ConfigManager VersionManager;
 
-        string _path;
+        private readonly string _path;
         public string Path => _path;
 
         /// <summary>
@@ -62,8 +58,27 @@ namespace ChaseLabs.CLUpdate.Lists
         public Objects.Version GetVersion(string key)
         {
             if (VersionManager.GetConfigByKey(key) != null)
+            {
                 return new Objects.Version() { Key = key, Value = VersionManager.GetConfigByKey(key).Value };
-            return null;
+            }
+
+            return new Objects.Version() { Key = key, Value = "0.0.0" }; ;
+        }
+
+        /// <summary>
+        /// Gets the Version Changelog
+        /// <para>Returns Empty String If Not Found</para>
+        /// </summary>
+        /// <param name="key">Optional</param>
+        /// <returns>Full Changelog</returns>
+        public string GetChangeLog(string key = "changelog")
+        {
+            if (VersionManager.GetConfigByKey(key) != null)
+            {
+                return VersionManager.GetConfigByKey(key).Value;
+            }
+
+            return "";
         }
 
         /// <summary>
