@@ -1,8 +1,8 @@
 # Chase Labs Auto Update Wiki
-1. ## [Installation](https://github.com/DcmanProductions/CLUpdater#install)
-1. ## [Getting Started](https://github.com/DcmanProductions/CLUpdater#getting-started)
-1. ## [Checking For Update](https://github.com/DcmanProductions/CLUpdater/#how-to-check-for-updates)
-1. ## [Downloading Update](https://github.com/DcmanProductions/CLUpdater#downloading-update)
+1. [Installation](https://github.com/DcmanProductions/CLUpdater#install)
+1. [Getting Started](https://github.com/DcmanProductions/CLUpdater#getting-started)
+1. [Checking For Update](https://github.com/DcmanProductions/CLUpdater/#how-to-check-for-updates)
+1. [Downloading Update](https://github.com/DcmanProductions/CLUpdater#downloading-update)
 
 # Chase Labs Auto Update Utility
 An Easy to Use Update Utility
