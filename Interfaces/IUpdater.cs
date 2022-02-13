@@ -5,20 +5,7 @@
     /// </summary>
     public interface IUpdater
     {
-        /// <summary>
-        /// Returns the Download URL
-        /// </summary>
-        string URL { get; }
-
-        /// <summary>
-        /// The Temp Directory in Which the Zip File will Reside
-        /// </summary>
-        string ZipDirectory { get; }
-
-        /// <summary>
-        /// The Directory in Which the Application File will Reside
-        /// </summary>
-        string UnzipDirectory { get; }
+        #region Public Properties
 
         /// <summary>
         /// The Executable to be Launched apon Completion
@@ -31,14 +18,23 @@
         bool OverwriteDirectory { get; }
 
         /// <summary>
-        /// Downloads the Zip Archive From URL
+        /// The Directory in Which the Application File will Reside
         /// </summary>
-        void Download();
+        string UnzipDirectory { get; }
 
         /// <summary>
-        /// Unzips the Zip Archive to Application Directory
+        /// Returns the Download URL
         /// </summary>
-        void Unzip();
+        string URL { get; }
+
+        /// <summary>
+        /// The Temp Directory in Which the Zip File will Reside
+        /// </summary>
+        string ZipDirectory { get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         /// Removes the Zip Archive and Temp Directory
@@ -46,8 +42,20 @@
         void CleanUp();
 
         /// <summary>
+        /// Downloads the Zip Archive From URL
+        /// </summary>
+        void Download();
+
+        /// <summary>
         /// Launches the Applications Executable
         /// </summary>
         void LaunchExecutable();
+
+        /// <summary>
+        /// Unzips the Zip Archive to Application Directory
+        /// </summary>
+        void Unzip();
+
+        #endregion Public Methods
     }
 }
