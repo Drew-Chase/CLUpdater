@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageId>ChaseLabs.Updater</PackageId>
-    <Version>0.1.6</Version>
+    <Version>0.1.7</Version>
     <Authors>Drew Chase</Authors>
     <Company>Chase Labs</Company>
     <Description>An Easy to Use Update Utility</Description>
@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/DcmanProductions/CLUpdater.git</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Utilities Updating Update ChaseLabs Helpers</PackageTags>
-    <PackageReleaseNotes>Changed Remote Version Location to the TEMP Folder</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated to .net 6.0</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
